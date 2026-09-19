@@ -1,0 +1,67 @@
+services:
+    app:
+        build:
+            context: ./docker/php
+        image: sistema-zeon-app
+        container_name: sistema_zeon_app
+        working_dir: /var/www/html
+        volumes:
+            - .:/var/www/html
+        depends_on:
+            - db
+        healthcheck:
+            test: ["CMD-SHELL", "nc -z 127.0.0.1 9000 || exit 1"]
+            interval: 5s
+            timeout: 3s
+            retries: 10
+            start_period: 30s
+        networks:
+            - sistema_zeon
+
+    webserver:
+        image: nginx:stable-alpine
+        container_name: sistema_zeon_webserver
+        ports:
+            - "8090:80"
+        volumes:
+            - .:/var/www/html
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+        depends_on:
+            app:
+                condition: service_healthy
+        networks:
+            - sistema_zeon
+
+    db:
+        image: postgres:16-alpine
+        container_name: sistema_zeon_db
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: ${DB_DATABASE}
+            POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - sistema_zeon_pgdata:/var/lib/postgresql/data
+        ports:
+            - "55432:5432"
+        networks:
+            - sistema_zeon
+
+    vite:
+        image: node:22-alpine
+        container_name: sistema_zeon_vite
+        working_dir: /var/www/html
+        command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5183"
+        volumes:
+            - .:/var/www/html
+        ports:
+            - "5183:5183"
+        networks:
+            - sistema_zeon
+
+networks:
+    sistema_zeon:
+        driver: bridge
+
+volumes:
+    sistema_zeon_pgdata:
