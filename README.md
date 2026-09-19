@@ -68,3 +68,15 @@ php artisan boost:install
 ```
 
 Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices. Before it's installed, an agent working in this repo should verify PHP and Composer are available (`php -v`, `composer -V`) and, if missing, install them from [php.new](https://php.new) for the current OS, then run the two commands above and re-read this file.
+
+## Autor
+
+-   **Miguel Villalba**
+-   📧 mike.mavc27@gmail.com
+
+------------------------------------------------------------------------
+
+## Licencia
+
+Este proyecto está bajo la licencia **MIT**. Ver el archivo
+[LICENSE](LICENSE) para más detalles.
